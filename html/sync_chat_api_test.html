@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROS Command Test</title>
+</head>
+<body>
+    <h1>Sync Pose Node Control</h1>
+    <form action="http://127.0.0.1:5000/sync/start_sync_pose" method="post">
+        <button type="submit">Start Sync Pose Node</button>
+    </form>
+    <form action="http://127.0.0.1:5000/sync/stop_sync_pose" method="post">
+        <button type="submit">Stop Sync Pose Node</button>
+    </form>
+    <h1>ROS Command Text</h1>
+    <form action="http://127.0.0.1:8080/chat/startchat" method="get">
+        <label for="commandStr">Enter Command (UTF-8):</label><br>
+        <input type="text" id="commandStr" name="commandStr" value="关节一旋转5度">
+        <br><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>

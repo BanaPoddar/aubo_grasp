@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物品信息</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>物品信息列表</h1>
+    <ul id="item-list">
+        <!-- 这里将显示物品信息 -->
+    </ul>
+    <button id="refresh-btn">刷新列表</button>
+
+    <script>
+        function refreshItemList() {
+            $.ajax({
+                url: "http://127.0.0.1:5000/api/get_objects_info",
+                type: "POST",
+                contentType: "application/json",
+                success: function(response) {
+                    var itemsjson = response.data;
+                    var items = JSON.parse(itemsjson);
+                    console.log(items)
+                    $("#item-list").empty();  // 清空列表
+                    
+                    items.forEach(function(item) {
+                        var listItem = "<li>";
+                        listItem += "<strong>ID:</strong> " + item.id + ", ";
+                        listItem += "<strong>类别:</strong> " + item.class + ", ";
+                        listItem += "<strong>置信度:</strong> " + item.confidence + "<br>";
+                        
+                        // 创建图片元素
+                        var imgElement = $("<img>");
+                        imgElement.attr("src", "data:image/png;base64," + item.image);  // 图片编码为 base64 字符串
+                        imgElement.css("max-width", "200px");  // 设置图片最大宽度
+                        listItem += imgElement[0].outerHTML;  // 将图片元素添加到列表项中
+                        
+                        listItem += "</li>";
+                        $("#item-list").append(listItem);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.log("获取物品信息失败，状态码：" + xhr.status);
+                }
+            });
+        }
+
+        // 页面加载时刷新列表
+        $(document).ready(function() {
+            refreshItemList();
+        });
+
+        // 绑定按钮点击事件
+        $("#refresh-btn").click(function() {
+            refreshItemList();
+        });
+    </script>
+</body>
+</html>

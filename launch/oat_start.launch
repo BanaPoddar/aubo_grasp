@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="aubo_grasp" type="oat_start" name="oat_start" output="screen"/>
+</launch>

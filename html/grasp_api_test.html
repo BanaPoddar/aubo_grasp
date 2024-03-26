@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+</head>
+<body>
+    <h1>API Test Page</h1>
+    <h2>随机抓取</h2>
+    <form id="randomGraspForm">
+        <button type="button" onclick="startRandomGrasp()">开始随机抓取</button>
+    </form>
+    
+    <h2>指定物品抓取</h2>
+    <form id="itemGraspForm">
+        <label for="item">物品类型:</label>
+        <select id="item" name="item">
+            <option value="box">盒子</option>
+            <option value="bottle">瓶子</option>
+            <option value="can">罐头</option>
+            <option value="tape">胶带</option>
+            <option value="hand">手</option>
+        </select>
+        <button type="button" onclick="startItemGrasp()">开始抓取</button>
+    </form>
+    
+    <h2>颜色识别抓取</h2>
+    <form id="colorGraspForm">
+        <label for="color">颜色:</label>
+        <select id="color" name="color">
+            <option value="red">红色</option>
+            <option value="blue">蓝色</option>
+            <option value="green">绿色</option>
+            <option value="black">黑色</option>
+            <option value="white">白色</option>
+            <option value="orange">橙色</option>
+            <option value="yellow">黄色</option>
+            <option value="purple">紫色</option>
+        </select>
+        <button type="button" onclick="startColorGrasp()">开始抓取</button>
+    </form>
+
+    <h2>查看抓取日志</h2>
+    <button type="button" onclick="getLogs()">查看日志</button>
+
+    <script>
+        function startRandomGrasp() {
+            fetch('http://127.0.0.1:5000/grasp/startRandomGrasp', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.msg);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function startItemGrasp() {
+            var item = document.getElementById("item").value;
+            fetch(`http://127.0.0.1:5000/api/item_grasp?item=${item}`, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.msg);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function startColorGrasp() {
+            var color = document.getElementById("color").value;
+            fetch(`http://127.0.0.1:5000/grasp/startColorGrasp?color=${color}`, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.msg);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function getLogs() {
+            fetch('http://127.0.0.1:5000/grasp/log', {
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                // Handle log data here
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
