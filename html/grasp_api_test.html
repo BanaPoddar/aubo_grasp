@@ -60,7 +60,7 @@
 
         function startItemGrasp() {
             var item = document.getElementById("item").value;
-            fetch(`http://127.0.0.1:5000/api/item_grasp?item=${item}`, {
+            fetch(`http://127.0.0.1:5000/grasp/startItemGrasp?item=${item}`, {
                 method: 'POST'
             })
             .then(response => response.json())

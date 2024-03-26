@@ -218,7 +218,7 @@ def random_grasp():
     return jsonify({"code": 200, "msg": "请求成功，随机抓取已开始！"})
 
 # 开始抓取指定物品接口
-@app.route('/api/item_grasp', methods=['POST'])
+@app.route('/grasp/startItemGrasp', methods=['POST'])
 def item_grasp():
     item = request.args.get("item")
     start_time = time.time()
@@ -246,6 +246,7 @@ def item_grasp():
         "timestamp": start_time,
         "action": "开始抓取",
         "item": item,
+        "color": "",
         "status": "成功"
     })
     return jsonify({"code": 200, "msg": f"请求成功，已开始抓取{item}！"})

@@ -23,7 +23,7 @@ console_handler.setFormatter(formatter)
 app.logger.addHandler(console_handler)
 
 
-@app.route('/api/get_objects_info', methods=['POST'])
+@app.route('/grasp/getRecognizedItems', methods=['GET'])
 def get_objects_info():
     global color_img_msg
     img_color = bridge.imgmsg_to_cv2(color_img_msg, "bgr8").astype(np.float32)

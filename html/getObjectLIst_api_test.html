@@ -16,8 +16,8 @@
     <script>
         function refreshItemList() {
             $.ajax({
-                url: "http://127.0.0.1:5000/api/get_objects_info",
-                type: "POST",
+                url: "http://127.0.0.1:5000/grasp/getRecognizedItems",
+                type: "GET",
                 contentType: "application/json",
                 success: function(response) {
                     var itemsjson = response.data;

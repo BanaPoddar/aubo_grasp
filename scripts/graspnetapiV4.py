@@ -225,10 +225,8 @@ class MoveItAubo:
             else:
                 # 初始循环次数
                 loop_count = 0
-
                 while loop_count < 3:
                     waypoints = len(plan.joint_trajectory.points)
-                    
                     # 如果waypoints < 40，则跳出循环并执行机械臂运动控制
                     if waypoints < 40:
                         rospy.loginfo("Waypoints数量小于40，继续执行")
@@ -293,23 +291,17 @@ class MoveItAubo:
     def move_to_placing_pose(self, cameraPose):
         # 设置机器臂当前的状态作为运动初始状态
         self.arm.set_start_state_to_current_state()
-
         # 设置目标位置所使用的参考坐标系
         reference_frame = 'camera_color_optical_frame'
         self.arm.set_pose_reference_frame(reference_frame)
-
-        
         # 定义pose
         pose = Pose()
         pose.position.x = cameraPose[0]
         pose.position.y = cameraPose[1]
         pose.position.z = cameraPose[2]-0.1
-
         self.arm.set_pose_target(pose, self.end_effector_link)
-            
          # 规划路径
         plan_success, plan, planning_time, error_code = self.arm.plan()
-
         if not plan.joint_trajectory.points:
             rospy.logwarn("No valid path found.")
         else:
@@ -321,16 +313,11 @@ class MoveItAubo:
                 rospy.loginfo("继续执行")
                 self.arm.execute(plan)
 
-     
-            
-
     def gripper_control(self, width):
         # 初始化发布器
         self.gripper_pub = rospy.Publisher('Robotiq2FGripperRobotOutput', outputMsg.Robotiq2FGripper_robot_output, queue_size=10)
-
         # 创建一个新的命令
         command = outputMsg.Robotiq2FGripper_robot_output()
-
         # 重置夹爪
         command.rACT = 0
         self.gripper_pub.publish(command)
@@ -343,11 +330,9 @@ class MoveItAubo:
         command.rFR = 150
         self.gripper_pub.publish(command)
         rospy.sleep(0.1)  # 等待一段时间以确保命令被执行
-
         # 设置夹爪的宽度
         command.rPR = int(width * 255)
         self.gripper_pub.publish(command)
-
         # 等待，以确保命令被发送
         #rospy.sleep(0.1)
 
@@ -410,7 +395,6 @@ class RealSenseImageSender:
         self.align_to = rs.stream.color 
         self.align = rs.align(self.align_to)
         self.moveit_aubo = MoveItAubo()
-
         # camera params
         intrinsic = np.array([911.23583984375, 0.0, 644.1905517578125, 0.0,
                             909.9681396484375, 356.885009765625, 0.0, 0.0, 1.0]).reshape(3, 3)
@@ -418,7 +402,6 @@ class RealSenseImageSender:
         factor_depth = 1.0 / cam_depth_scale
         self.camera = CameraInfo(1280.0, 720.0, intrinsic[0][0], intrinsic[1][1], intrinsic[0][2], intrinsic[1][2], factor_depth)
         self.num_point = 20000
-
         self.pointcloud_publisher = rospy.Publisher('/camera/pointcloud', PointCloud2, queue_size=10)
         self.images_publisher = rospy.Publisher('/camera/aligned_images', Images, queue_size=10)
 

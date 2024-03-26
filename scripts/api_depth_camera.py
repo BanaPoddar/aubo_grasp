@@ -11,19 +11,6 @@ app = Flask(__name__)
 
 bridge = cv_bridge.CvBridge()
 color_img_msg = None
- 
- 
-# def cctv_live():
-#     while True:
-#         success, frame = camera.read()
-#         if not success:
-#             break
-#         else:
-#             ret, buffer = cv2.imencode('.jpg', frame)
-#             frame = buffer.tobytes()
-#         yield (b'--frame\r\n'
-#                b'Content-Type:image/jpeg\r\n\r\n' + frame + b'\r\n')
-        
 
 def graspnet_camera():
     while True:
@@ -33,24 +20,22 @@ def graspnet_camera():
         color_img = buffer.tobytes()
         yield (b'--frame\r\n'
                 b'Content-Type:image/jpeg\r\n\r\n' + color_img + b'\r\n')
- 
- 
+
 @app.route('/')
 def index():
     return render_template('cctv.html')
- 
- 
+
 # @app.route('/video')
 # def video():
 #     return Response(cctv_live(), mimetype='multipart/x-mixed-replace;boundary=frame')
 
- 
 @app.route('/video')
 def video():
     return Response(graspnet_camera(), mimetype='multipart/x-mixed-replace;boundary=frame')
 
 def images_callback(msg):
-    # Your existing images_callback function with slight modifications to use Flask and threading
+    # Your existin
+    # g images_callback function with slight modifications to use Flask and threading
     global color_img_msg
     global bridge
     color_img_msg = msg.color_image

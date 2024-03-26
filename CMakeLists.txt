@@ -206,43 +206,33 @@ target_link_libraries(
    libmsc.so -ldl -lpthread -lm -lrt -lasound
  )
 
- add_executable(voice_control src/voice_control.cpp)
- target_link_libraries(
-    voice_control
-    ${catkin_LIBRARIES} 
-    libmsc.so -ldl -pthread
-  )
-
-add_executable(rotate_joint1 src/rotate_joint1.cpp)
-  target_link_libraries(rotate_joint1 ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-    Message(STATUS "<<<<<<<<<<<<<<<<<<<<<<<<<Note: build aubo_demo node for rotate_joint1")
-
-add_executable(e5_voice_control src/e5_voice_control.cpp)
-  target_link_libraries(e5_voice_control ${catkin_LIBRARIES} libmsc.so -ldl -pthread)
-    Message(STATUS "<<<<<<<<<<<<<<<<<<<<<<<<<Note: build aubo_demo node for e5_voice_control")
-
-add_executable(i5_voice_control src/i5_voice_control.cpp)
-  target_link_libraries(i5_voice_control ${catkin_LIBRARIES} libmsc.so -ldl -pthread)
-    Message(STATUS "<<<<<<<<<<<<<<<<<<<<<<<<<Note: build aubo_demo node for rotate_joint1")
-
-add_executable(example_publisher src/publish.cpp)
-  target_link_libraries(example_publisher ${catkin_LIBRARIES} ${Boost_LIBRARIES})
-    Message(STATUS "<<<<<<<<<<<<<<<<<<<<<<<<<Note: build aubo_demo node for example_publisher")
-
 add_executable(iat_cut src/iat_cut.cpp)
-  target_link_libraries(iat_cut ${catkin_LIBRARIES} libmsc.so -ldl -pthread)
+  target_link_libraries(
+  iat_cut
+  ${catkin_LIBRARIES}
+  libmsc.so -ldl -pthread
+  )
     Message(STATUS "<<<<<<<<<<<<<<<<<<<<<<<<<Note: build aubo_demo node for iat_cut")
 
 add_executable(chatgpt src/chatgpt.cpp)
-  target_link_libraries(chatgpt ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+  target_link_libraries(chatgpt
+  ${catkin_LIBRARIES}
+  ${Boost_LIBRARIES}
+  )
     Message(STATUS "<<<<<<<<<<<<<<<<<<<<<<<<<Note: build aubo_demo node for chatgpt")
 
-add_executable(e5_voice_controlV3 src/e5_voice_controlV3.cpp)
-  target_link_libraries(e5_voice_controlV3 ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+add_executable(e5_voice_control src/e5_voice_controlV3.cpp)
+  target_link_libraries(e5_voice_controlV3
+  ${catkin_LIBRARIES}
+  ${Boost_LIBRARIES}
+  )
     Message(STATUS "<<<<<<<<<<<<<<<<<<<<<<<<<Note: build aubo_demo node for e5_voice_controlV3")
 
 add_executable(oat_start src/oat_start.cpp)
-  target_link_libraries(oat_start ${catkin_LIBRARIES} oatpp::oatpp)
+  target_link_libraries(oat_start
+  ${catkin_LIBRARIES}
+  oatpp::oatpp
+  )
 
 
 ## Specify libraries to link a library or executable target against
