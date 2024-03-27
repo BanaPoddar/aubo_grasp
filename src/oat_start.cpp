@@ -147,7 +147,8 @@ public:
         // 获取请求参数 commandStr
         oatpp::String commandStr = request->getQueryParameters().get("commandStr");
         utf8_command = urlDecode(commandStr->c_str());
-        std::string jsonReplyStr = "{\"replyStr\":[";// 返回的 JSON 字符串
+        // 返回的 JSON 字符串
+        std::string jsonReplyStr = "{\"replyStr\":[";
         commands = split(utf8_command, "，");
         for (const auto& command : commands) {
             if(command.empty()){
@@ -155,7 +156,7 @@ public:
             }
             processCommand(command);
             std::cout << "Current reply: " << replyStr << std::endl;
-            jsonReplyStr += "\"" + command + "\"";
+            jsonReplyStr += "\"" + replyStr + "\"";
             //只要不是最后一个指令，就加逗号
             if (command != commands.back()) {
                 jsonReplyStr += ",";

@@ -14,14 +14,14 @@ includes: []
 search: true
 highlight_theme: darkula
 headingLevel: 2
-
+author：王睿
 ---
 
 
 
 # aubo-graspSystem
 
-> v1.0.0
+> v1.0.1
 
 ### 抓取模块api
 
@@ -374,6 +374,14 @@ POST /chat/startchat
 | 名称       | 位置 | 类型   | 必选 | 说明                                |
 | ---------- | ---- | ------ | ---- | ----------------------------------- |
 | commandStr | path | string | true | 用户文本输入内容（utf-8）用"，"分割 |
+
+**返回示例**
+
+```
+{
+"replyStr":["机械臂执行旋转命令","机械臂执行旋转命令","机械臂设置为初始姿态"]
+}
+```
 
 **返回结果**
 
