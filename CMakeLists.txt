@@ -221,8 +221,8 @@ add_executable(chatgpt src/chatgpt.cpp)
   )
     Message(STATUS "<<<<<<<<<<<<<<<<<<<<<<<<<Note: build aubo_demo node for chatgpt")
 
-add_executable(e5_voice_control src/e5_voice_controlV3.cpp)
-  target_link_libraries(e5_voice_controlV3
+add_executable(e5_voice_control src/e5_voice_control.cpp)
+  target_link_libraries(e5_voice_control
   ${catkin_LIBRARIES}
   ${Boost_LIBRARIES}
   )
