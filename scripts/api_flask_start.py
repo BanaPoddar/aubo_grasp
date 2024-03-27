@@ -15,6 +15,7 @@ import json
 from aubo_grasp.msg import Images
 from aubo_grasp.msg import graspMessage
 from flask_cors import CORS
+from yolo import get_all_objects_info
 
 
 # Initialize Mediapipe components and ROS
@@ -255,6 +256,17 @@ def item_grasp():
 @app.route('/grasp/log', methods=['GET'])
 def get_logs():
     return jsonify(logs)
+
+@app.route('/grasp/getRecognizedItems', methods=['GET'])
+def get_objects_info():
+    global color_img
+    img_color = color_img.astype(np.float32)
+    cv2.imwrite("src/aubo_grasp/resources/color.png",img_color)
+    # 使用 YOLO 检测物体并获取信息
+    objects_info = get_all_objects_info("src/aubo_grasp/resources/color.png")
+    # 转换为 JSON 格式的字符串
+    objects_info_json = json.dumps(objects_info)
+    return jsonify({"code": 200, "msg": "获取物品信息成功！", "data": objects_info_json})
 
 
 def start_camera_thread():

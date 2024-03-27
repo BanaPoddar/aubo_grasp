@@ -147,9 +147,7 @@ public:
         // 获取请求参数 commandStr
         oatpp::String commandStr = request->getQueryParameters().get("commandStr");
         utf8_command = urlDecode(commandStr->c_str());
-        //std::string gb2312_command =utf8ToGb2312(utf8_command);
-        std::vector<std::string> replyArray;
-        oatpp::List<oatpp::String> oatppStringList;
+        std::string jsonReplyStr = "{\"replyStr\":[";// 返回的 JSON 字符串
         commands = split(utf8_command, "，");
         for (const auto& command : commands) {
             if(command.empty()){
@@ -157,20 +155,19 @@ public:
             }
             processCommand(command);
             std::cout << "Current reply: " << replyStr << std::endl;
-            replyArray.push_back(replyStr);
-            //oatppStringList->push_back(oatpp::String(replyStr));
+            jsonReplyStr += "\"" + command + "\"";
+            //只要不是最后一个指令，就加逗号
+            if (command != commands.back()) {
+                jsonReplyStr += ",";
+            }
         }
-        // 创建一个 ROS 消息对象
+        jsonReplyStr += "]}";
+        // 创建一个 ROS 消息对象并发布
         std_msgs::String rosMsg;
         rosMsg.data = utf8ToGb2312(urlDecode(commandStr->c_str())); // 将 oatpp 的 String 转换为 std::string 并赋值给 ROS 消息对象
-        // 发布 ROS 消息
         oat_start_publisher.publish(rosMsg);
         // 返回响应
-        oatpp::parser::json::mapping::Serializer serializer;
-        auto jsonStringStream = std::make_shared<oatpp::data::stream::BufferOutputStream>();
-        serializer.serializeToStream(jsonStringStream.get(), oatppStringList);
-        auto jsonString = jsonStringStream->toString();
-        auto response = ResponseFactory::createResponse(Status::CODE_200, "1");
+        auto response = ResponseFactory::createResponse(Status::CODE_200, jsonReplyStr);
         response->putHeader(Header::CONTENT_TYPE, "application/json");
         return response;
     }
