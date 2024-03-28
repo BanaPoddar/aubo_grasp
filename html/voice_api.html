@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>语音识别测试</title>
+</head>
+<body>
+  <h1>语音识别测试</h1>
+  <button id="startButton">开始录音</button>
+  <button id="stopButton" disabled>停止录音</button>
+  <p id="recognizedText"></p>
+
+  <script>
+    const startButton = document.getElementById('startButton');
+    const stopButton = document.getElementById('stopButton');
+    const recognizedText = document.getElementById('recognizedText');
+
+    let recognition = new webkitSpeechRecognition(); // 创建语音识别对象
+
+    startButton.addEventListener('click', function() {
+      recognition.start(); // 开始录音
+      startButton.disabled = true;
+      stopButton.disabled = false;
+    });
+
+    stopButton.addEventListener('click', function() {
+      recognition.stop(); // 停止录音
+      startButton.disabled = false;
+      stopButton.disabled = true;
+    });
+
+    recognition.onresult = function(event) {
+      // 识别到语音后的处理
+      let result = event.results[event.resultIndex];
+      let transcript = result[0].transcript;
+      recognizedText.innerText = transcript;
+
+      // 将识别结果发送到后端处理
+      fetch('http://127.0.0.1:5000/voice/convert', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ audio_base64: transcript })
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('识别结果：', data.recognized_text);
+      })
+      .catch(error => {
+        console.error('发生错误：', error);
+      });
+    };
+
+    recognition.onerror = function(event) {
+      console.error('发生错误：', event.error);
+    };
+  </script>
+</body>
+</html>

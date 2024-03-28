@@ -39,6 +39,8 @@ from moveit_commander import MoveGroupCommander, PlanningSceneInterface, RobotCo
 from moveit_msgs.msg import  PlanningScene, ObjectColor,CollisionObject, AttachedCollisionObject,Constraints,OrientationConstraint
 import cv2
 from ultralytics import YOLO
+from api_flask_start import app
+from flask import Flask, jsonify, Response
 
 exe_flag = False#抓取标志
 camera_setup_time = 2 
@@ -51,7 +53,7 @@ place_id = 0#放置id
 img_color = []
 img_depth = []
 model = YOLO('src/aubo_grasp/weights/best.pt')
-
+aligned_frames = None
 
 class MoveItAubo:
     def __init__(self):
@@ -251,12 +253,9 @@ class MoveItAubo:
                         rospy.loginfo("继续执行")
                         # 控制机械臂完成运动
                         self.arm.execute(plan)
-
                         self.arm.set_pose_target(base_pose, self.end_effector_link)
-
                         # 规划路径
                         plan_success, plan, planning_time, error_code = self.arm.plan()
-
                         if not plan.joint_trajectory.points:
                             rospy.logwarn("No valid path found. The goal pose may be unreachable, please planning the next goal pose")
                             continue
@@ -270,10 +269,8 @@ class MoveItAubo:
                             width = 0.85
                         elif width < 0.4:
                             width = 0.4
-
                         # 控制台输出夹爪宽度
                         rospy.loginfo("Gripper width: %f" % width)
-
                         # 控制夹爪
                         self.gripper_control(width)
                         #延迟1s
@@ -383,7 +380,6 @@ class MoveItAubo:
         self.scene.remove_world_object(object_id)
         rospy.sleep(1)
 
-
 class RealSenseImageSender:
     def __init__(self):
         # Basic settings: 启动相机，建立管道通信（耗费时间，只启动一次）
@@ -404,7 +400,6 @@ class RealSenseImageSender:
         self.num_point = 20000
         self.pointcloud_publisher = rospy.Publisher('/camera/pointcloud', PointCloud2, queue_size=10)
         self.images_publisher = rospy.Publisher('/camera/aligned_images', Images, queue_size=10)
-
         # Initialize CvBridge
         self.bridge = CvBridge()
     
@@ -491,10 +486,7 @@ class RealSenseImageSender:
                     #     #移动到指定位置
                     #     self.moveit_aubo.move_to_placing_pose(camera_coordinate)
                     can_capture_image = False
-    
-
                         
-
     def send_images(self, img_color, img_depth):
         if id==1:
             url = "http://192.168.137.1:5000/api/grasps"
@@ -546,7 +538,6 @@ def place_callback(msg):
     place_flag = msg.flag
     place_color = msg.color
     place_id = msg.id
-
 
 if __name__ == "__main__":
     image_sender = RealSenseImageSender()
