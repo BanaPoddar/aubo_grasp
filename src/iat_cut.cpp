@@ -98,16 +98,13 @@ void chatterCallback(const std_msgs::String::ConstPtr& msg) {
 int main(int argc, char **argv) {
     ros::init(argc, argv, "iat_voice_cut");
     ros::NodeHandle n;
-
     iat_voice_cut = n.advertise<std_msgs::String>("/iat_voice_cut", 1000);
     ros::Subscriber iat_text =n.subscribe("iat_text",1000,iattextCallback);
     ros::Rate loop_rate(10);
-
     while (ros::ok()) {
         ros::spinOnce();
         loop_rate.sleep();
     }
-
     ros::shutdown();
     return 0;
 }

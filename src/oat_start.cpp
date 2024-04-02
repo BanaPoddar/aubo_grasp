@@ -14,7 +14,6 @@
 
 ros::Publisher oat_start_publisher;
 std::vector<std::string> commands; // 指令集
-std::string replyStr = "";
 std::string utf8_command = "";
 
 // 解码URL编码的字符串
@@ -71,56 +70,30 @@ std::string utf8ToGb2312(const std::string &utf8Str) {
     return result;
 }
 
-//将指令按照关键词分割
-std::vector<std::string> split(const std::string& text, const std::string& delim) {
-    std::vector<std::string> tokens;
-    size_t start = 0, end = 0;
-    const std::string keywords[] = {"然后", "最后", "接着"};
-    while ((end = text.find(delim, start)) != std::string::npos) {
-        std::string token = text.substr(start, end - start);
-        if (!token.empty()) {
-            tokens.push_back(token);
-        }
-        start = end + delim.length();
-    }
-
-    std::string last_token = text.substr(start);
-    if (!last_token.empty()) {
-        tokens.push_back(last_token); // 添加最后一个片段
-    }
-    // 检查关键词是否存在于每个片段中，如果存在则进行二次拆分
-    std::vector<std::string> temp_tokens;
-    for (const auto& token : tokens) {
-        bool found = false;
-        for (const auto& keyword : keywords) {
-            size_t pos = token.find(keyword);
-            if (pos != std::string::npos) {
-                found = true;
-                auto sub_tokens = split(token.substr(pos + keyword.length()), keyword);
-                for (const auto& sub_token : sub_tokens) {
-                    if (!sub_token.empty()) {
-                        temp_tokens.push_back(sub_token);
-                    }
-                }
-                if (!temp_tokens.empty()) {
-                    temp_tokens.push_back(token.substr(0, pos));
-                }
-                break;
+// 分割函数，使用多个关键词分割字符串
+std::vector<std::string> split(const std::string &s, const std::vector<std::string> &keywords) {
+    std::vector<std::string> result;
+    size_t lastPos = 0; // 使用size_t而不是std::string::size_t
+    for (const auto &keyword : keywords) {
+        size_t pos = s.find(keyword, lastPos);
+        if (pos != std::string::npos) {
+            // 将找到的子字符串添加到结果中
+            if (pos > lastPos) {
+                result.push_back(s.substr(lastPos, pos - lastPos));
             }
-        }
-        if (!found) {
-            temp_tokens.push_back(token);
+            lastPos = pos + keyword.length();
         }
     }
-    // 移除最后一个空字符串
-    if (!temp_tokens.empty() && temp_tokens.back().empty()) {
-        temp_tokens.pop_back();
+    // 添加最后一个分割后的子字符串
+    if (lastPos < s.length()) {
+        result.push_back(s.substr(lastPos));
     }
-    return temp_tokens;
+    return result;
 }
 
 //设置返回值
-void processCommand(const std::string& command) {
+std::string processCommand(const std::string& command) {
+    std::string replyStr = "";
     if (command.find("旋转") != std::string::npos) {
         replyStr = "机械臂执行旋转命令";
     } else if (command.find("初始姿态") != std::string::npos) {
@@ -134,6 +107,7 @@ void processCommand(const std::string& command) {
     } else {
         replyStr = "未识别的指令";
     }
+    return replyStr;
 }
 
 // 自定义请求处理程序 voiceControl
@@ -149,14 +123,14 @@ public:
         utf8_command = urlDecode(commandStr->c_str());
         // 返回的 JSON 字符串
         std::string jsonReplyStr = "{\"replyStr\":[";
-        commands = split(utf8_command, "，");
+        std::vector<std::string> keywords = {"，", "然后", "接着", "最后"};
+        commands = split(utf8_command, keywords);
         for (const auto& command : commands) {
             if(command.empty()){
                 continue;
             }
-            processCommand(command);
-            std::cout << "Current reply: " << replyStr << std::endl;
-            jsonReplyStr += "\"" + replyStr + "\"";
+            std::cout << "Current reply: " << processCommand(command) << std::endl;
+            jsonReplyStr += "\"" + processCommand(command) + "\"";
             //只要不是最后一个指令，就加逗号
             if (command != commands.back()) {
                 jsonReplyStr += ",";
@@ -165,7 +139,8 @@ public:
         jsonReplyStr += "]}";
         // 创建一个 ROS 消息对象并发布
         std_msgs::String rosMsg;
-        rosMsg.data = utf8ToGb2312(urlDecode(commandStr->c_str())); // 将 oatpp 的 String 转换为 std::string 并赋值给 ROS 消息对象
+        //rosMsg.data = utf8ToGb2312(urlDecode(commandStr->c_str())); // 将 oatpp 的 String 转换为 std::string 并赋值给 ROS 消息对象
+        rosMsg.data = urlDecode(commandStr->c_str()); 
         oat_start_publisher.publish(rosMsg);
         // 返回响应
         auto response = ResponseFactory::createResponse(Status::CODE_200, jsonReplyStr);
@@ -184,7 +159,7 @@ void oat_run()
     // 创建 HTTP 连接处理程序
     auto connectionHandler = oatpp::web::server::HttpConnectionHandler::createShared(router);
     // 创建 TCP 连接提供者
-    auto connectionProvider = oatpp::network::tcp::server::ConnectionProvider::createShared({"0.0.0.0", 8080, oatpp::network::Address::IP_4});
+    auto connectionProvider = oatpp::network::tcp::server::ConnectionProvider::createShared({"0.0.0.0", 8079, oatpp::network::Address::IP_4});
     // 创建服务器，它接受提供的 TCP 连接并将其传递给 HTTP 连接处理程序
     oatpp::network::Server server(connectionProvider, connectionHandler);
     // 打印服务器端口

@@ -212,21 +212,31 @@ add_executable(iat_cut src/iat_cut.cpp)
   ${catkin_LIBRARIES}
   libmsc.so -ldl -pthread
   )
-    Message(STATUS "<<<<<<<<<<<<<<<<<<<<<<<<<Note: build aubo_demo node for iat_cut")
+
+add_executable(iat_cut_utf8 src/iat_cut_utf8.cpp)
+  target_link_libraries(
+  iat_cut_utf8
+  ${catkin_LIBRARIES}
+  libmsc.so -ldl -pthread
+  )
 
 add_executable(chatgpt src/chatgpt.cpp)
   target_link_libraries(chatgpt
   ${catkin_LIBRARIES}
   ${Boost_LIBRARIES}
   )
-    Message(STATUS "<<<<<<<<<<<<<<<<<<<<<<<<<Note: build aubo_demo node for chatgpt")
 
 add_executable(e5_voice_control src/e5_voice_control.cpp)
   target_link_libraries(e5_voice_control
   ${catkin_LIBRARIES}
   ${Boost_LIBRARIES}
   )
-    Message(STATUS "<<<<<<<<<<<<<<<<<<<<<<<<<Note: build aubo_demo node for e5_voice_controlV3")
+
+add_executable(e5_voice_control_utf8 src/e5_voice_control_utf8.cpp)
+  target_link_libraries(e5_voice_control_utf8
+  ${catkin_LIBRARIES}
+  ${Boost_LIBRARIES}
+  )
 
 add_executable(oat_start src/oat_start.cpp)
   target_link_libraries(oat_start

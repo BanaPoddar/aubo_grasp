@@ -1,3 +1,5 @@
+import rospy
+from std_msgs.msg import String
 from flask import Flask, request, jsonify
 from aip import AipSpeech
 import base64
@@ -8,6 +10,8 @@ APP_ID = '45284568'
 API_KEY = 'kyxAYXanZ9212FLpy4u3QshO'
 SECRET_KEY = 'WmmcGKNr5jtpIN4XFyVQbIEhKC888qsc'
 
+#rospy.init_node('speech')
+#iat_text_pub = rospy.Publisher('iat_text', String, queue_size=1000)
 # Initialize Baidu AipSpeech client
 client = AipSpeech(APP_ID, API_KEY, SECRET_KEY)
 
@@ -25,6 +29,8 @@ def recognize_audio():
         # 提取识别结果
         if 'result' in result:
             recognized_text = result['result'][0]
+            # 发布识别结果到话题 iat_text
+            #iat_text_pub.publish(recognized_text)
             return jsonify({'recognized_text': recognized_text}), 200
         else:
             return jsonify({'error': 'Failed to recognize audio'}), 500
